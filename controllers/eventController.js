@@ -1,5 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const Event = require('../models/eventModel');
+const Image = require('../models/Images'); 
+const path = require("path");
+const fs = require("fs");
 
 //@desc Get all event
 //@route GET /api/events
@@ -33,7 +36,7 @@ const createEvent = asyncHandler(async (req, res) => {
 //@route GET /api/events/:id
 //@access private
 const getEvent = asyncHandler(async (req, res) => {
-    const event = await Event.findById(req.params.id);
+    const event = await Event.findById(req.params.id).populate('images');
     if (!event) {
       res.status(404);
       throw new Error("event not found");
@@ -65,23 +68,35 @@ const updateEvent = asyncHandler(async (req, res) => {
     res.status(200).json(updatedEvent);
   });
   
-  //@desc Delete event
+  //@desc delete an event and its associated images
   //@route DELETE /api/events/:id
   //@access private
-  const deleteEvent = asyncHandler(async (req, res) => {
-    const event = await Event.findById(req.params.id);
-    if (!event) {
-      res.status(404);
-      throw new Error("event not found");
+  // controllers/imageController.js
+const deleteEvent = asyncHandler(async (req, res) => {
+  const eventId = req.params.id;
+
+  // Find the event by ID
+  const event = await Event.findById(eventId);
+  if (!event) {
+    res.status(404);
+    throw new Error("Event not found");
+  }
+
+  // Delete all associated images from the filesystem
+  for (const imageId of event.images) {
+    const image = await Image.findById(imageId);
+    if (image) {
+      const imagePath = path.join(__dirname, '..', image.imagePath);
+      fs.unlinkSync(imagePath); // Delete image file from filesystem
+      await Image.findByIdAndDelete(imageId); // Delete image document from MongoDB
     }
-    // if (event.user_id.toString() !== req.user.id) {
-    //   res.status(403);
-    //   throw new Error("User don't have permission to update other user events");
-    // }
-    await Event.deleteOne({ _id: req.params.id });
-    res.status(200).json(event);
-  });
-  
+  }
+
+  // Delete the event from MongoDB
+  await Event.findByIdAndDelete(eventId);
+
+  res.status(200).json({ message: "Event and associated images deleted successfully" });
+});
 
   module.exports = {
     getEvents,

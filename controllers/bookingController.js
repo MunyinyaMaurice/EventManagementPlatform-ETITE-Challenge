@@ -83,6 +83,5 @@ const cancelBooking = asyncHandler(async (req, res) => {
     getBookings,
     createBooking,
     getUserBookings,
-    // updateBooking,
     cancelBooking,
   };

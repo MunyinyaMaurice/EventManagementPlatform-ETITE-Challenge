@@ -21,6 +21,12 @@ const eventSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  images: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Image',
+    },
+  ],
 });
 
 const Event = mongoose.model('Event', eventSchema);
