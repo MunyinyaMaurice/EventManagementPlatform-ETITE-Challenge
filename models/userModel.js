@@ -26,6 +26,11 @@ const userSchema = new mongoose.Schema({
       required: [true, "Please add the number of ticket to be booked"],
     },
   }],
+  roles: {
+    type: String,
+    enum: ['ADMIN', 'USER'],
+    default: 'USER',
+  },
 },
 {
     timestamps: true,

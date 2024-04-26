@@ -7,10 +7,12 @@ const {
   updateEvent,
   deleteEvent,
 } = require("../controllers/EventController");
-// const validateToken = require("../middleware/validateTokenHandler");
+const validateToken = require("../middleware/validateTokenHandler");
+const checkRole = require("../middleware/checkRole");
 
-// router.use(validateToken);
-router.route("/").get(getEvents).post(createEvent);
-router.route("/:id").get(getEvent).put(updateEvent).delete(deleteEvent);
+router.use(validateToken);
+
+router.route("/").get(getEvents).post(checkRole('ADMIN'), createEvent);;
+router.route("/:id").get(getEvent).put(checkRole('ADMIN'), updateEvent).delete(checkRole('ADMIN'), deleteEvent);
 
 module.exports = router;

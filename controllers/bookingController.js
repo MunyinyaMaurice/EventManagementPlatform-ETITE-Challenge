@@ -15,15 +15,26 @@ const getBookings = asyncHandler(async (req, res) => {
 //@route POST /api/bookings
 //@access private
 const createBooking = asyncHandler(async (req, res) => {
+  const event = await Event.findById(req.params.id);
+  if(!event){
+    res.status(404);
+    throw new error("Event not found");
+  }
+
+  const eventId = req.params.id;
     console.log("The request body is :", req.body);
-    const { eventId, userId, ticketsBooked } = req.body;
-    if (!eventId || !userId || !ticketsBooked ) {
+    const {ticketsBooked } = req.body;
+    if ( !ticketsBooked ) {
       res.status(400);
-      throw new Error("All fields are mandatory !");
+      throw new Error("Ticket number is required !");
     }
+    
+    console.log("eventId :", eventId);
+    console.log("userId :", req.user.id);
     const newBooking = await Booking.create({
-        eventId, userId, ticketsBooked
-    //   user_id: req.user.id,
+        eventId, 
+        ticketsBooked,
+        user_id: req.user.id
     });
     // Update the corresponding event's ticketsBooked count
     await Event.findByIdAndUpdate(eventId, {
@@ -38,13 +49,7 @@ const createBooking = asyncHandler(async (req, res) => {
 //@route GET /api/bookings
 //@access private
 const getUserBookings = asyncHandler(async (req, res) => {
-    const userId= req.params.id;
-    const user = await User.findById(userId);
-    if(!user){
-        res.status(404);
-      throw new Error("User not found !");
-    }
-    const bookings = await Booking.find({ userId });
+    const bookings = await Booking.find({ user_id: req.user.id });
     res.status(200).json(bookings);
   });
 
@@ -57,6 +62,10 @@ const cancelBooking = asyncHandler(async (req, res) => {
     if(!booking){
         res.status(404);
       throw new Error("Booking not found !");
+    }
+    if(booking.user_id.toString() !== req.user.id){
+      req.status(403);
+      throw new console.error("user is not autherized to cancel this booking");
     }
     // Update booking status to CANCELED
     booking.status = 'CANCELED';

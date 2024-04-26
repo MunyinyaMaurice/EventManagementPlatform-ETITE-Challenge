@@ -55,6 +55,7 @@ const loginUser = asyncHandler(async (req, res) => {
           username: user.username,
           email: user.email,
           id: user.id,
+          roles:user.roles,
         },
       },
       process.env.ACCESS_TOKEN_SECERT,
