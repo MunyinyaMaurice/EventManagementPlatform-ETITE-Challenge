@@ -61,19 +61,35 @@ This repository contains the backend API for an Event Booking System. The API al
 # API Endpoints
 
 > POST /api/users/register: Register a new user.
+
 > POST /api/users/login: Authenticate and log in a user.
+
 > GET /api/users/current: Get current user information.
+
 > GET /api/users: Get all users' information (accessible to admin only).
+
 > PUT /api/users/:id: Update user information (accessible to authenticated users).
+
 > GET /api/events: Get all events.
+
 > POST /api/events: Create a new event.
+
 > GET /api/events/:id: Get details of a specific event.
+
 > PUT /api/events/:id: Update details of a specific event.
+
 > DELETE /api/events/:id: Delete a specific event and associated images.
+
 > POST /api/images/:id: Upload an image for a specific event.
+
 > DELETE /api/images/:id: Delete an image associated with a specific event.
+
 > GET /api/categories: Get all event categories.
+
 > POST /api/categories: Create a new event category.
+
 > GET /api/categories/:id: Get details of a specific event category.
+
 > PUT /api/categories/:id: Update details of a specific event category.
+
 > DELETE /api/categories/:id: Delete a specific event category.
