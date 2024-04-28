@@ -3,6 +3,9 @@ const {
   registerUser,
   currentUser,
   loginUser,
+  updateUser,
+  getAllUsers
+
 } = require("../controllers/userController");
 const validateToken = require("../middleware/validateTokenHandler");
 const checkRole = require("../middleware/checkRole");
@@ -15,8 +18,10 @@ router.post("/login", loginUser);
 
 router.get("/current", validateToken, currentUser);
 
-router.put("/:id", validateToken, updateUser );
+router.use(validateToken);
 
-router.route("/", validateToken).get(checkRole('ADMIN'), getAllUsers)
+router.route("/:id").put(updateUser );
+
+router.route("/").get(checkRole('ADMIN'), getAllUsers)
 
 module.exports = router;

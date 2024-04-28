@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -105,37 +107,55 @@ const currentUser = asyncHandler(async (req, res) => {
 //@route GET /api/users
 //@access private (accessible to ADMIN only)
 const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({}).select('-password'); 
-  res.json(users);
+  const users = await User.find({}, 'username email roles');
+  const userDetails = users.map(user => ({
+    username: user.username,
+    email: user.email,
+    roles: user.roles
+  }));
+  res.json(userDetails);
 });
 
 //@desc Update user info
 //@route GET /api/users
 // @access private update user information (accessible to authenticated users)
 const updateUser = asyncHandler(async (req, res) => {
-  const { username, email } = req.body;
   const userId = req.params.id;
+  const updatedUser = req.body;
+  const loggedInUserId = req.user._id;
 
-  // Only allow the user to update their own information, or allow ADMIN to update any user's information
-  if (!req.user.isAdmin && req.user.id !== userId) {
-    res.status(403);
-    throw new Error('You are not authorized to perform this action');
+  try {
+    // Check if userId is a valid ObjectId
+    if (!mongoose.isValidObjectId(userId)) {
+      res.status(400);
+      throw new Error('Invalid user ID');
+    }
+
+    // Retrieve the user from the database
+    const user = await User.findById(userId);
+
+    if (!user) {
+      res.status(404);
+      throw new Error('User not found');
+    }
+
+    // Check authorization
+    if (!(req.user.roles.includes('ADMIN')) && !user._id.equals(loggedInUserId)) {
+      res.status(403);
+      throw new Error('You are not authorized to perform this action');
+    }
+
+    // Update user's information
+    user.set(updatedUser); // Apply updates to the retrieved user object
+    const updatedUserData = await user.save(); // Save the updated user data
+
+    res.json(updatedUserData); // Respond with the updated user data
+  } catch (error) {
+    console.error('Error updating user:', error.message);
+    res.status(error.status || 500).json({ error: error.message || 'Internal Server Error' });
   }
-
-  const user = await User.findById(userId);
-
-  if (!user) {
-    res.status(404);
-    throw new Error('User not found');
-  }
-
-  // Update user information
-  user.username = username || user.username;
-  user.email = email || user.email;
-
-  const updatedUser = await user.save();
-  res.json(updatedUser);
 });
+
 
 
 module.exports = { registerUser, loginUser, currentUser,getAllUsers, updateUser  };
