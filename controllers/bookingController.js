@@ -22,15 +22,12 @@ const createBooking = asyncHandler(async (req, res) => {
   }
 
   const eventId = req.params.id;
-    console.log("The request body is :", req.body);
     const {ticketsBooked } = req.body;
-    if ( !ticketsBooked ) {
-      res.status(400);
-      throw new Error("Ticket number is required !");
-    }
-    
-    console.log("eventId :", eventId);
-    console.log("userId :", req.user.id);
+// Validate ticketCapacity (must be greater than or equal to zero)
+if (typeof ticketsBooked !== 'number' || ticketCapacity < 0 || !ticketsBooked) {
+  res.status(400);
+  throw new Error("Ticket capacity must be a non-negative number");
+}
     const newBooking = await Booking.create({
         eventId, 
         ticketsBooked,

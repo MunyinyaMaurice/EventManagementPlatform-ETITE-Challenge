@@ -14,8 +14,8 @@ app.use("/api/events", require("./routes/eventRoutes"));
 app.use("/api/bookings", require("./routes/bookingRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/images", require("./routes/imageRoutes"));
+app.use("/api/categories", require("./routes/categoryRoutes"));
 app.use(errorHandler);
-// app.use(checkRole);
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

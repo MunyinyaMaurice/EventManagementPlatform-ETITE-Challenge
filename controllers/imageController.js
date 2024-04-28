@@ -6,7 +6,6 @@ const Image = require('../models/Images');
 const fs = require('fs');
 const path = require("path");
 const multer = require("multer");
-
 // Define Multer storage configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -17,10 +16,32 @@ const storage = multer.diskStorage({
   },
 });
 
-// Initialize Multer upload middleware
-const upload = multer({ storage: storage });
+// File type and size validation
+const fileFilter = (req, file, cb) => {
+  // Allowed file extensions
+  const allowedFileTypes = /jpeg|jpg|png|gif/;
+  // Check file extension
+  const extname = allowedFileTypes.test(path.extname(file.originalname).toLowerCase());
+  // Check MIME type
+  const mimetype = allowedFileTypes.test(file.mimetype);
 
-  //@desc upload event image 
+  if (extname && mimetype) {
+    cb(null, true); // Accept the file
+  } else {
+    cb(new Error("Only JPEG, JPG, PNG, and GIF files are allowed"), false); // Reject the file
+    // res.status(400);
+    // throw new error("Only JPEG, JPG, PNG, and GIF files are allowed");
+  }
+};
+
+// Initialize Multer upload middleware with file size limit and file type validation
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // Max file size: 2 MB
+  fileFilter: fileFilter 
+});
+
+//@desc upload event image 
 //@route POST /api/images/:id
 //@access private
 const uploadImage = asyncHandler(async (req, res) => {

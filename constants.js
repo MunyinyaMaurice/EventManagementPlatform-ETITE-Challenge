@@ -3,6 +3,7 @@ exports.constants = {
     UNAUTHORIZED: 401,
     FORBIDDEN: 403,
     NOT_FOUND: 404,
+    CONFLIT: 409,
     SERVER_ERROR: 500,
   };
   

@@ -27,6 +27,12 @@ const errorHandler = (err, req, res, next) => {
         message: err.message,
         stackTrace: err.stack,
       });
+      case constants.CONFLIT:
+      res.json({
+        title: "Conflict",
+        message: err.message,
+        stackTrace: err.stack,
+      });
     case constants.SERVER_ERROR:
       res.json({
         title: "Server Error",

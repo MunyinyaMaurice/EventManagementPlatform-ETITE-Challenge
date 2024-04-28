@@ -12,7 +12,7 @@ const checkRole = require("../middleware/checkRole");
 
 router.use(validateToken);
 
-router.route("/").get(getEvents).post(checkRole('ADMIN'), createEvent);;
-router.route("/:id").get(getEvent).put(checkRole('ADMIN'), updateEvent).delete(checkRole('ADMIN'), deleteEvent);
+router.route("/").get(getEvents);
+router.route("/:id").get(getEvent).post(checkRole('ADMIN'), createEvent).put(checkRole('ADMIN'), updateEvent).delete(checkRole('ADMIN'), deleteEvent);
 
 module.exports = router;
