@@ -36,7 +36,7 @@ This repository contains the backend API for an Event Booking System. The API al
 ## To run this project locally, follow these steps:
 
 ## Clone the repository:
-> git clone https://github.com/MunyinyaMaurice/EventManagementPlatform-ETITE-Challenge new-directory
+> git clone https://github.com/MunyinyaMaurice/EventManagementPlatform-ETITE-Challenge.git new-directory
 
 > Navigate to the project directory:
 
